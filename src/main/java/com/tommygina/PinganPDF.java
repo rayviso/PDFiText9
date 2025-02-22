@@ -25,36 +25,24 @@ import java.io.StringReader;
 
 class PinganPDF {
 
-    // 类内部私有变量
-    private static final PdfFont font;
     private static final float nDiv = (float) 3.9;
     private static final String excelFilePath = "pingan.xlsx";
 
-    static {
-        try {
-            font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    // 创建单个pdf页面
+    private void createPage(Document document, float pageHeight, PdfFont font) {
+
+
+        createFixedContent(document, pageHeight, font);
+        // createVariableContent();
     }
 
-    private PdfWriter pdfWriter = null;
-    private PdfDocument pdfDoc = null;
-    private Document document = null;
-    private float pageHeight = 0;
+    private void readExcel(String excelFilePath) {
 
 
-    // 创建单个pdf页面
-    private void createPage() {
-        PdfPage page = pdfDoc.addNewPage(PageSize.A4.rotate());
-        pdfDoc.addPage(page);
-
-        createFixedContent();
-        createVariableContent();
     }
 
     // 固定格式文件
-    private void createFixedContent() {
+    private void createFixedContent(Document document, float pageHeight, PdfFont font) {
         System.out.println("Creating Fixed Content");
         // row1 column1
         Paragraph p1 = new Paragraph("客户存款月结单")
@@ -131,7 +119,7 @@ class PinganPDF {
         document.add(p10);
 
         // row3 column3
-        Paragraph p11 = new Paragraph("承前余额")
+        Paragraph p11 = new Paragraph("承前余额:67,673,054.52")
                 .setFont(font)
                 .setFontSize(11)
                 .setFontColor(new DeviceRgb(0, 0, 0))
@@ -150,21 +138,28 @@ class PinganPDF {
     }
 
     // 写入可变内容
-    private void createVariableContent() {
+    private void createVariableContent(Document document, float pageHeight, PdfFont font) {
         System.out.println("Creating Variable Content");
         System.out.println("Variable Content is done");
     }
 
     // 创建新的平安PDF
     public void createNewPinganPDF(String pinganModifiedPdfFilePath) {
+
+        readExcel(excelFilePath);
+
+
+
         try {
             // 初始化内部变量
-            pdfWriter = new PdfWriter(pinganModifiedPdfFilePath);
-            pdfDoc = new PdfDocument(pdfWriter);
-            document = new Document(pdfDoc, PageSize.A4.rotate());
+            // PdfFont font = PdfFontFactory.createFont("fonts/STSongStd-Light.ttf", "Identity-H");
+            PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H");
+            PdfWriter pdfWriter = new PdfWriter(pinganModifiedPdfFilePath);
+            PdfDocument pdfDoc = new PdfDocument(pdfWriter);
+            Document document = new Document(pdfDoc, PageSize.A4.rotate(), true);
+            float pageHeight = PageSize.A4.rotate().getHeight();
 
-
-            createPage();
+            createPage(document, pageHeight, font);
 
             document.close();
 
