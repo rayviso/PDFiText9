@@ -24,9 +24,9 @@ class Main {
 
         // 第三步：人工修改Excel文件，并保存；保证
         // 第四部：根据修改的Excel生成新的平安PDF文件
-//        System.out.println("Step 4 is working");
-//        PinganPDF pa = new PinganPDF();
-//        pa.createNewPinganPDF(pinganModifiedPdfFilePath);
-//        System.out.println("Step 4 is done");
+        System.out.println("Step 4 is working");
+        PinganPDF pa = new PinganPDF();
+        pa.createNewPinganPDF(pinganModifiedPdfFilePath);
+        System.out.println("Step 4 is done");
     }
 }

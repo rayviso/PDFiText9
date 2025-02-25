@@ -2,6 +2,7 @@ package com.tommygina;
 
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -10,6 +11,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.SimpleTextExtractionStrategy;
 import com.itextpdf.layout.Document;
@@ -72,8 +74,8 @@ class PinganPDF {
 
     // 创建单个pdf页面
     private void createPage(Document document, PdfDocument pdfDoc, float pageHeight, PdfFont font, String pageInfo, int startRow, int endRow, Sheet sheet) {
-        pdfDoc.addNewPage(PageSize.A4.rotate());
-        createFixedContent(document, pageHeight, font, pageInfo);
+        PdfPage page = pdfDoc.addNewPage(PageSize.A4.rotate());
+        createFixedContent(document, page, pageHeight, font, pageInfo);
         // 读取当前批次的数据
         for (int i = startRow; i < endRow; i++) {
             Row row = sheet.getRow(i);
@@ -112,9 +114,7 @@ class PinganPDF {
                 System.out.println(pageInfo);
 
                 createPage(document, pdfDoc, pageHeight, font, pageInfo, startRow, endRow, sheet);
-
             }
-
 
             // 关闭资源
             workbook.close();
@@ -141,7 +141,7 @@ class PinganPDF {
     }
 
     // 固定格式文件
-    private void createFixedContent(Document document, float pageHeight, PdfFont font, String pageInfo) {
+    private void createFixedContent(Document document, PdfPage page, float pageHeight, PdfFont font, String pageInfo) {
         System.out.println("Creating Fixed Content");
 
         // image
@@ -153,9 +153,34 @@ class PinganPDF {
             Image imageCachet = new Image(cachetImageData);
 
             document.add(imageLogo.setFixedPosition((float) 20, (float) (pageHeight - nDiv - 36.1)).scaleAbsolute((float) 160, (float) 30));
-            document.add(imageCachet.setFixedPosition((float) 715.1, (float) (pageHeight - nDiv - 501.1)).scaleAbsolute((float) 72.95, (float) 33.90));
+            document.add(imageCachet.setFixedPosition((float) 714.8, (float) (pageHeight - nDiv - 501.1)).scaleAbsolute((float) 72.95, (float) 33.90));
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 横线
+        try {
+            PdfCanvas canvas = new PdfCanvas(page);
+
+            // 设置横线的起始点和结束点
+            float x1 = 20;
+            float y1 = 511;
+            float x2 = 822;
+            float y2 = (float) (499 - 13 - 1.2 + 0.3);
+
+            // 设置线条的粗细和颜色
+            canvas.setLineWidth((float) 2);  // 线条粗细
+            canvas.setStrokeColor(ColorConstants.GRAY);  // 设置颜色为红色
+
+            // 绘制线条
+            canvas.moveTo(x1, y1);
+            canvas.lineTo(x2, y1);
+            canvas.stroke();
+            canvas.moveTo(x1, y2);
+            canvas.lineTo(x2, y2);
+            canvas.stroke();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -185,7 +210,6 @@ class PinganPDF {
         document.add(new Paragraph(headReciprocalAccount).setFixedPosition((float) 607.46, (float) (pageHeight - nDiv - 100.0), (float) 44.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
         document.add(new Paragraph(headSummary).setFixedPosition((float) 743.8, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
 
-
         // row5
         document.add(new Paragraph(printedTimes).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 507.0), (float) 64).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
         document.add(new Paragraph(printedTime).setFixedPosition((float) 142.3, (float) (pageHeight - nDiv - 507.0), (float) 300).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
@@ -194,10 +218,9 @@ class PinganPDF {
         document.add(new Paragraph(tellerNumber).setFixedPosition((float) 703.7, (float) (pageHeight - nDiv - 507.0), (float) 40).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
 
         // inforow
-        document.add(new Paragraph(info1).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 529.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(info1).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 528.7), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
         document.add(new Paragraph(info2).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 540.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
         document.add(new Paragraph(info3).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 551.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-
 
         System.out.println("Fixed Content is done");
     }
