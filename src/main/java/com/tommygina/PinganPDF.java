@@ -1,5 +1,7 @@
 package com.tommygina;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -11,145 +13,216 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 import com.itextpdf.kernel.pdf.canvas.parser.listener.SimpleTextExtractionStrategy;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.itextpdf.layout.properties.AreaBreakType;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.util.Objects;
 
 class PinganPDF {
 
     private static final float nDiv = (float) 3.9;
     private static final String excelFilePath = "pingan.xlsx";
 
+    // row1 3/4：少一个页面信息，动态输入即可
+    private static final String monthlyStatement = "客户存款月结单";
+    private static final String statementNumber = "结单号：2412310251999000006599";
+    private static final String date = "2024年12月";
+
+    // row2 3/3
+    private static final String clientBank = "客户行:平安银行杭州分行营业部";
+    private static final String accountName = "户名:上海华通铂银交易市场有限公司";
+    private static final String verificationCode = "验 证 码:";
+
+    // row3 3/3
+    private static final String accountNumber = "账  号:15877266778899";
+    private static final String currency = "币种:RMB";
+    private static final String balanceBroughtDown = "承前余额:67,673,054.52";
+
+    // head 7/7
+    private static final String headSerialNumber = "序号";
+    private static final String headDealDate = "日期";
+    private static final String headTransactionAmount = "借/贷方发生额";
+    private static final String headBalance = "余额";
+    private static final String headReciprocalAccountName = "对方户名";
+    private static final String headReciprocalAccount = "对方账户";
+    private static final String headSummary = "摘要";
+
+    // row4 5/5
+    private static final String printedTimes = "已打印次数:1";
+    private static final String printedTime = "打印时间:2025-01-01";
+    private static final String printedType = "打印方式:系统PDF生成";
+    private static final String deviceNumber = "设备编号:0000";
+    private static final String tellerNumber = "柜员号:";
+
+    // inforow
+    private static final String info1 = "温馨提示：根据国家财政部颁发的《内部会计控制规范-货币资金（试行）》第十九条的规定，单位应与开户银行定期进行对账，此月结单每月初印发，请收到后及时";
+    private static final String info2 = "核对财务；核对不符的，应在印发当月15日前与开户行联系，查明原因，及时处理；逾期没有联系的，视为财务核对相符，请妥善保管月结单，并在您的地址发生变";
+    private static final String info3 = "换时，请及时书面通知我行。";
+
+
+    // png
+    private static final String pinganLogo = "pinganLogo.png";
+    private static final String pinganCachet = "pinganCachet.png";
+
+
     // 创建单个pdf页面
-    private void createPage(Document document, float pageHeight, PdfFont font) {
+    private void createPage(Document document, PdfDocument pdfDoc, float pageHeight, PdfFont font, String pageInfo, int startRow, int endRow, Sheet sheet) {
+        pdfDoc.addNewPage(PageSize.A4.rotate());
+        createFixedContent(document, pageHeight, font, pageInfo);
+        // 读取当前批次的数据
+        for (int i = startRow; i < endRow; i++) {
+            Row row = sheet.getRow(i);
+            int m = i % 25;
 
-
-        createFixedContent(document, pageHeight, font);
+            if (row != null) {
+                createVariableContent(document, pageHeight, font, row, m);
+            }
+        }
         // createVariableContent();
+        document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
     }
 
-    private void readExcel(String excelFilePath) {
+    // 读取
+    private void readExcelAndCreatePages(String excelFilePath, PdfDocument pdfDoc, Document document, float pageHeight, PdfFont font) {
+        try {
+            FileInputStream fis = new FileInputStream(new File(excelFilePath));
+            Workbook workbook = WorkbookFactory.create(fis);
+            Sheet sheet = workbook.getSheetAt(0);
+            int nRows = sheet.getPhysicalNumberOfRows();
+            int nPDFPages = (int) Math.ceil((double) nRows / 25);
+            int batchSize = 25;
+            System.out.println("PDF Pages is " + nPDFPages);
+
+            int currentPage = 0;
+
+            for (int startRow = 0; startRow < nRows; startRow += batchSize) {
+//            for (int startRow = 0; startRow < 5; startRow += batchSize) {
+                int endRow = Math.min(startRow + batchSize, nRows);
+                System.out.println("Reading rows from " + (startRow + 1) + " to " + endRow);
+
+                currentPage++;
+                System.out.println("Current Page is " + currentPage);
+
+                String pageInfo = "第" + currentPage + "页  共" + nPDFPages + "页";
+                System.out.println(pageInfo);
+
+                createPage(document, pdfDoc, pageHeight, font, pageInfo, startRow, endRow, sheet);
+
+            }
 
 
+            // 关闭资源
+            workbook.close();
+            fis.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 从Excel中获取对应的值，输出为String
+    private String getCellString(Cell cell) {
+        // 根据单元格的类型读取数据
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                return Double.toString(cell.getNumericCellValue());
+            case BOOLEAN:
+                return Boolean.toString(cell.getBooleanCellValue());
+            default:
+                return "UNKNOWN";
+        }
     }
 
     // 固定格式文件
-    private void createFixedContent(Document document, float pageHeight, PdfFont font) {
+    private void createFixedContent(Document document, float pageHeight, PdfFont font, String pageInfo) {
         System.out.println("Creating Fixed Content");
-        // row1 column1
-        Paragraph p1 = new Paragraph("客户存款月结单")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                // .setFixedPosition((float)222.5, (float)(pageHeight - nDiv -  45), (float)77);
-                .setFixedPosition((float) 222.5, (float) (pageHeight - nDiv - 41.0), (float) 77);
-        document.add(p1);
 
-        // row1 column2
-        Paragraph p2 = new Paragraph("结单号：2412310251999000006599")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 342.8, (float) (pageHeight - nDiv - 41.0), (float) 155.80402);
-        document.add(p2);
+        // image
+        try {
+            ImageData logoImageData = ImageDataFactory.create(pinganLogo);
+            ImageData cachetImageData = ImageDataFactory.create(pinganCachet);
 
-        // row1 column3
-        Paragraph p3 = new Paragraph("2024年12月")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 583.4, (float) (pageHeight - nDiv - 41.0), (float) 52.492);
+            Image imageLogo = new Image(logoImageData);
+            Image imageCachet = new Image(cachetImageData);
 
-        document.add(p3);
+            document.add(imageLogo.setFixedPosition((float) 20, (float) (pageHeight - nDiv - 36.1)).scaleAbsolute((float) 160, (float) 30));
+            document.add(imageCachet.setFixedPosition((float) 715.1, (float) (pageHeight - nDiv - 501.1)).scaleAbsolute((float) 72.95, (float) 33.90));
 
-        // row1 column4
-        Paragraph p4 = new Paragraph("第1页  共94页")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 663.6, (float) (pageHeight - nDiv - 41.0), (float) 63.800003);
-        document.add(p4);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        // row2 column1
-        Paragraph p5 = new Paragraph("客户行:平安银行杭州分行营业部")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 61.0), (float) 156.618);
-        document.add(p5);
+        // row1
+        document.add(new Paragraph(monthlyStatement).setFixedPosition((float) 222.5, (float) (pageHeight - nDiv - 41.0), (float) 77).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(statementNumber).setFixedPosition((float) 342.8, (float) (pageHeight - nDiv - 41.0), (float) 180).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(date).setFixedPosition((float) 583.4, (float) (pageHeight - nDiv - 41.0), (float) 100).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(pageInfo).setFixedPosition((float) 663.6, (float) (pageHeight - nDiv - 41.0), (float) 100).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
 
-        // row2 column2
-        Paragraph p6 = new Paragraph("户名:上海华通铂银交易市场有限公司")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 289.33, (float) (pageHeight - nDiv - 61.0), (float) 178.618);
-        document.add(p6);
 
-        // row2 column3
-        Paragraph p8 = new Paragraph("验 证 码:")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 556.67, (float) (pageHeight - nDiv - 61.0), (float) 40.172);
-        document.add(p8);
+        // row2
+        document.add(new Paragraph(clientBank).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 61.0), (float) 156.618).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(accountName).setFixedPosition((float) 289.33, (float) (pageHeight - nDiv - 61.0), (float) 178.618).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(verificationCode).setFixedPosition((float) 556.67, (float) (pageHeight - nDiv - 61.0), (float) 40.172).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
 
-        // row3 column1
-        Paragraph p9 = new Paragraph("账  号:15877266778899")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 76.0), (float) 100.32001);
-        document.add(p9);
-
-        // row3 column2
-        Paragraph p10 = new Paragraph("币种:RMB")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 289.33, (float) (pageHeight - nDiv - 76.0), (float) 47.542);
-        document.add(p10);
-
-        // row3 column3
-        Paragraph p11 = new Paragraph("承前余额:67,673,054.52")
-                .setFont(font)
-                .setFontSize(11)
-                .setFontColor(new DeviceRgb(0, 0, 0))
-                .setFixedPosition((float) 556.67, (float) (pageHeight - nDiv - 76.0), (float) 105.29201);
-        document.add(p11);
+        // row3
+        document.add(new Paragraph(accountNumber).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 76.0), (float) 100.32001).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(currency).setFixedPosition((float) 289.33, (float) (pageHeight - nDiv - 76.0), (float) 47.542).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(balanceBroughtDown).setFixedPosition((float) 556.67, (float) (pageHeight - nDiv - 76.0), (float) 105.29201).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
 
         // row4
-        document.add(new Paragraph("序号").setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-        document.add(new Paragraph("日期").setFixedPosition((float) 70.12, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-        document.add(new Paragraph("借/贷方发生额").setFixedPosition((float) 134.28, (float) (pageHeight - nDiv - 100.0), (float) 69.673996).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-        document.add(new Paragraph("对方户名").setFixedPosition((float) 326.76, (float) (pageHeight - nDiv - 100.0), (float) 44.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-        document.add(new Paragraph("对方账户").setFixedPosition((float) 607.46, (float) (pageHeight - nDiv - 100.0), (float) 44.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
-        document.add(new Paragraph("摘要").setFixedPosition((float) 743.8, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headSerialNumber).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headDealDate).setFixedPosition((float) 70.12, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headTransactionAmount).setFixedPosition((float) 134.28, (float) (pageHeight - nDiv - 100.0), (float) 69.673996).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headBalance).setFixedPosition((float) 230.52, (float) (pageHeight - nDiv - 100.0), (float) 22).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headReciprocalAccountName).setFixedPosition((float) 326.76, (float) (pageHeight - nDiv - 100.0), (float) 44.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headReciprocalAccount).setFixedPosition((float) 607.46, (float) (pageHeight - nDiv - 100.0), (float) 44.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(headSummary).setFixedPosition((float) 743.8, (float) (pageHeight - nDiv - 100.0), (float) 22.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+
+
+        // row5
+        document.add(new Paragraph(printedTimes).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 507.0), (float) 64).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(printedTime).setFixedPosition((float) 142.3, (float) (pageHeight - nDiv - 507.0), (float) 300).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(printedType).setFixedPosition((float) 382.9, (float) (pageHeight - nDiv - 507.0), (float) 120).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(deviceNumber).setFixedPosition((float) 543.3, (float) (pageHeight - nDiv - 507.0), (float) 72).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(tellerNumber).setFixedPosition((float) 703.7, (float) (pageHeight - nDiv - 507.0), (float) 40).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+
+        // inforow
+        document.add(new Paragraph(info1).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 529.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(info2).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 540.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(info3).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 551.0), (float) 800).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+
 
         System.out.println("Fixed Content is done");
     }
 
-    // 写入可变内容
-    private void createVariableContent(Document document, float pageHeight, PdfFont font) {
-        System.out.println("Creating Variable Content");
-        System.out.println("Variable Content is done");
+    private void createVariableContent(Document document, float pageHeight, PdfFont font, Row row, int m) {
+//        for (int i = 0; i < 7; i++) {
+//            System.out.println(getCellString(row.getCell(i)));
+//        }
+        document.add(new Paragraph(getCellString(row.getCell(0))).setFixedPosition((float) 22.0, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 30.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(getCellString(row.getCell(1))).setFixedPosition((float) 70.12, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 42).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(getCellString(row.getCell(2))).setFixedPosition((float) 134.28, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 70.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(getCellString(row.getCell(3))).setFixedPosition((float) 230.52, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 64.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(getCellString(row.getCell(4))).setFixedPosition((float) 326.76, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 260.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        document.add(new Paragraph(getCellString(row.getCell(5))).setFixedPosition((float) 607.46, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 100.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        String s = getCellString(row.getCell(6));
+        if (Objects.equals(s, "交易资金支付结算服务")) {
+            document.add(new Paragraph(getCellString(row.getCell(6))).setFixedPosition((float) 743.8, (float) (pageHeight - nDiv - 124.0 - 15 * m + 4), (float) 100.0).setFontSize(8).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        } else {
+            document.add(new Paragraph(getCellString(row.getCell(6))).setFixedPosition((float) 743.8, (float) (pageHeight - nDiv - 124.0 - 15 * m), (float) 100.0).setFontSize(11).setFont(font).setFontColor(new DeviceRgb(0, 0, 0)));
+        }
+
     }
 
     // 创建新的平安PDF
     public void createNewPinganPDF(String pinganModifiedPdfFilePath) {
-
-        readExcel(excelFilePath);
-
-
-
         try {
             // 初始化内部变量
             // PdfFont font = PdfFontFactory.createFont("fonts/STSongStd-Light.ttf", "Identity-H");
@@ -157,12 +230,13 @@ class PinganPDF {
             PdfWriter pdfWriter = new PdfWriter(pinganModifiedPdfFilePath);
             PdfDocument pdfDoc = new PdfDocument(pdfWriter);
             Document document = new Document(pdfDoc, PageSize.A4.rotate(), true);
+            pdfDoc.addNewPage(PageSize.A4.rotate());
             float pageHeight = PageSize.A4.rotate().getHeight();
+            readExcelAndCreatePages(excelFilePath, pdfDoc, document, pageHeight, font);
 
-            createPage(document, pageHeight, font);
-
+            // 将多出来的一页进行删除
+            pdfDoc.removePage(pdfDoc.getNumberOfPages());
             document.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -230,3 +304,4 @@ class PinganPDF {
         }
     }
 }
+

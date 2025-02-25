@@ -8,8 +8,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8d8eebcc-7976-4ef3-a3e6-e1998e17da18" name="更改" comment="v1 @20250222&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;&#10;&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;">
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/PdfStructure$CustomEventListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/PdfStructure$CustomEventListener.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/PdfStructure.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/PdfStructure.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" afterDir="false" />
@@ -42,15 +47,12 @@
     &quot;assignee&quot;: &quot;rayviso&quot;
   }
 }</component>
-  <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="5807a253-fbe6-4e7e-83eb-b296e2b41a27" />
-  </component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:rayviso/PDFiText9.git&quot;,
-    &quot;accountId&quot;: &quot;5807a253-fbe6-4e7e-83eb-b296e2b41a27&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:rayviso/PDFiText9.git",
+    "accountId": "18fa458d-241b-4977-bc7a-4336ddda68e7"
   }
-}</component>
+}]]></component>
   <component name="MaliciousPackageCheckinHandlerState">
     <option name="packageCheck" value="true" />
   </component>
@@ -80,7 +82,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/ning/Documents/code/java/PDFiText9",
+    "last_opened_file_path": "D:/code/java/PDFiText9/PDFiText9",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -90,7 +92,7 @@
     "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "http.proxy",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
     "vue.rearranger.settings.migration": "true",
     "应用程序.Main.executor": "Run",
     "应用程序.MyPDF.executor": "Run"
@@ -121,6 +123,7 @@
       <workItem from="1740100066139" duration="8453000" />
       <workItem from="1740203701292" duration="6104000" />
       <workItem from="1740214809016" duration="2470000" />
+      <workItem from="1740236014301" duration="46396000" />
     </task>
     <task id="LOCAL-00001" summary="tommy &lt;rayviso@163.com&gt;">
       <option name="closed" value="true" />
@@ -155,6 +158,17 @@
   <component name="UpdateCopyrightCheckinHandler">
     <option name="UPDATE_COPYRIGHT" value="true" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="rayviso &lt;rayviso@163.com&gt;" />
     <MESSAGE value="tommy &lt;rayviso@163.com&gt;" />
@@ -174,6 +188,40 @@
           <properties class="java.lang.NullPointerException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="com.itextpdf.io.exceptions.IOException" package="com.itextpdf.io.exceptions" />
+          <option name="timeStamp" value="12" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
+          <line>320</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
+          <line>304</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
+          <line>238</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
+          <line>222</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java</url>
+          <line>79</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
