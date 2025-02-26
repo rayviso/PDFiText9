@@ -8,13 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8d8eebcc-7976-4ef3-a3e6-e1998e17da18" name="更改" comment="v1 @20250222&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;&#10;&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;">
+      <change afterPath="$PROJECT_DIR$/pingan.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/CreatePDFTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/CreatePDFTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/CreatePDFTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/CreatePDFTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +118,7 @@
       <workItem from="1740214809016" duration="2470000" />
       <workItem from="1740236014301" duration="47900000" />
       <workItem from="1740491026357" duration="3373000" />
-      <workItem from="1740561025922" duration="2298000" />
+      <workItem from="1740561025922" duration="3342000" />
     </task>
     <task id="LOCAL-00001" summary="tommy &lt;rayviso@163.com&gt;">
       <option name="closed" value="true" />
@@ -165,7 +160,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740489721170</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="v1 @20250222&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;&#10;&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;">
+      <option name="closed" value="true" />
+      <created>1740564599305</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1740564599305</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
