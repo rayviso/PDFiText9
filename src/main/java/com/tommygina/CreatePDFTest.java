@@ -17,7 +17,7 @@ import java.io.IOException;
 
 class CreatePDFTest {
     // 创建PDF
-    public static void createPDF() {
+    public static void main() {
         try {
             System.out.println("Creating PDF is processing");
 
