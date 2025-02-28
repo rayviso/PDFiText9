@@ -5,6 +5,7 @@ import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.font.PdfFontFactory.EmbeddingStrategy;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
@@ -35,9 +36,9 @@ class PinganPDF {
 
     static {
         try {
-            // fontChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", EmbeddingStrategy.PREFER_NOT_EMBEDDED, false);
+            fontChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", EmbeddingStrategy.PREFER_NOT_EMBEDDED, false);
 
-            fontChinese = PdfFontFactory.createTtcFont("");
+            // fontChinese = PdfFontFactory.createTtcFont("");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,7 +114,7 @@ class PinganPDF {
             int nRows = sheet.getPhysicalNumberOfRows();
             int nPDFPages = (int) Math.ceil((double) nRows / 25);
             int batchSize = 25;
-            System.out.println("PDF Pages is " + nPDFPages);
+            System.out.println("【共计创建PDF页面数为" + nPDFPages + "页】");
 
             int currentPage = 1;
 
@@ -121,7 +122,7 @@ class PinganPDF {
 //            for (int startRow = 0; startRow < 5; startRow += batchSize) {
                 int endRow = Math.min(startRow + batchSize, nRows);
 //                System.out.println("Reading rows from " + (startRow + 1) + " to " + endRow);
-                System.out.println("Current Page is " + currentPage);
+//                System.out.println("Current Page is " + currentPage);
                 pageInfo = "第" + currentPage + "页  共" + nPDFPages + "页";
                 createPage(startRow, endRow, sheet);
                 currentPage++;
@@ -309,7 +310,7 @@ class PinganPDF {
 
             PdfWriter pdfWriter = new PdfWriter(pinganModifiedPdfFilePath, writerProperties);
             pdfDoc = new PdfDocument(pdfWriter);
-            System.out.println(pdfDoc.getPdfVersion());
+//            System.out.println(pdfDoc.getPdfVersion());
             document = new Document(pdfDoc, PageSize.A4.rotate());
 
             readExcelAndCreatePages(excelFilePath);

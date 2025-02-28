@@ -1,5 +1,7 @@
-com/tommygina/CreatePDFTest.class
-com/tommygina/Main.class
-com/tommygina/PdfStructure.class
-com/tommygina/PinganPDF.class
-com/tommygina/PdfStructure$CustomEventListener.class
+com\tommygina\CreatePDFTest.class
+com\tommygina\PinganPDF.class
+com\tommygina\PdfStructure$ImageExtractorListener.class
+com\tommygina\PinganPDF$1.class
+com\tommygina\PdfStructure.class
+com\tommygina\Main.class
+com\tommygina\PdfStructure$CustomEventListener.class
