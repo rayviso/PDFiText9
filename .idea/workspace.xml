@@ -8,6 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8d8eebcc-7976-4ef3-a3e6-e1998e17da18" name="更改" comment="v1 @20250222&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;&#10;&#10;Signed-off-by: tommy &lt;rayviso@163.com&gt;">
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tommygina/Main.java" afterDir="false" />
@@ -16,9 +17,6 @@
       <change beforePath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tommygina/PinganPDF.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/pdfitext9-1.0-SNAPSHOT.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,12 +46,12 @@
     &quot;assignee&quot;: &quot;rayviso&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:rayviso/PDFiText9.git",
-    "accountId": "18fa458d-241b-4977-bc7a-4336ddda68e7"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:rayviso/PDFiText9.git&quot;,
+    &quot;accountId&quot;: &quot;18fa458d-241b-4977-bc7a-4336ddda68e7&quot;
   }
-}]]></component>
+}</component>
   <component name="MaliciousPackageCheckinHandlerState">
     <option name="packageCheck" value="true" />
   </component>
@@ -148,6 +146,7 @@
       <workItem from="1740236014301" duration="47900000" />
       <workItem from="1740491026357" duration="3373000" />
       <workItem from="1740561025922" duration="16284000" />
+      <workItem from="1740816909143" duration="5071000" />
     </task>
     <task id="LOCAL-00001" summary="tommy &lt;rayviso@163.com&gt;">
       <option name="closed" value="true" />
@@ -272,6 +271,21 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PdfStructure.java</url>
           <line>212</line>
           <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java</url>
+          <line>87</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/Main.java</url>
+          <line>80</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/tommygina/PinganPDF.java</url>
+          <line>377</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

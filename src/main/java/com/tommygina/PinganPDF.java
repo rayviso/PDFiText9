@@ -1,5 +1,6 @@
 package com.tommygina;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -15,7 +16,11 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
-import org.apache.poi.ss.usermodel.*;
+import com.itextpdf.layout.properties.AreaBreakType;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -24,13 +29,35 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Objects;
 
-class PinganPDF {
+public class PinganPDF {
 
+    private static final String pinganConfigJsonFilePath = "pingan.json";
+    private static PdfWriter pdfWriter;
+    private static WriterProperties writerProperties;
+    private static String date;
+    private static String balanceBroughtDown;
+    // "打印时间:2025-01-01"
+    private static String printedTime;
+    private String configDate;
+    private String configBalanceBroughtDown;
+    private String configPrintDate;
+
+    public String getConfigDate() {
+        return configDate;
+    }
     private static final PdfVersion pdfVersion15 = PdfVersion.PDF_1_5;
     private static final float pageA4Height = PageSize.A4.rotate().getHeight(); // 595.0 2479px
     private static final float pageA4Width = PageSize.A4.rotate().getWidth();  // 842.0 3508px
     private static PdfFont fontChinese;
     private static PdfDocument pdfDoc;
+
+    public void setConfigDate(String configDate) {
+        this.configDate = configDate;
+    }
+
+    public String getConfigBalanceBroughtDown() {
+        return configBalanceBroughtDown;
+    }
     private static Document document;
     private static String pageInfo;
 
@@ -50,7 +77,10 @@ class PinganPDF {
     // row1 3/4：少一个页面信息，动态输入即可
     private static final String monthlyStatement = "客户存款月结单";
     private static final String statementNumber = "结单号：2412310251999000006599";
-    private static final String date = "2024年12月";
+
+    public void setConfigBalanceBroughtDown(String configBalanceBroughtDown) {
+        this.configBalanceBroughtDown = configBalanceBroughtDown;
+    }
 
     // row2 3/3
     private static final String clientBank = "客户行:平安银行杭州分行营业部";
@@ -60,7 +90,10 @@ class PinganPDF {
     // row3 3/3
     private static final String accountNumber = "账  号:15877266778899";
     private static final String currency = "币种:RMB";
-    private static final String balanceBroughtDown = "承前余额:67,673,054.52";
+
+    public String getConfigPrintDate() {
+        return configPrintDate;
+    }
 
     // head 7/7
     private static final String headSerialNumber = "序号";
@@ -73,7 +106,10 @@ class PinganPDF {
 
     // row4 5/5
     private static final String printedTimes = "已打印次数:1";
-    private static final String printedTime = "打印时间:2025-01-01";
+
+    public void setConfigPrintDate(String configPrintDate) {
+        this.configPrintDate = configPrintDate;
+    }
     private static final String printedType = "打印方式:系统PDF生成";
     private static final String deviceNumber = "设备编号:0000";
     private static final String tellerNumber = "柜员号:";
@@ -100,16 +136,18 @@ class PinganPDF {
             }
         }
 
-        document.add(new AreaBreak());
-//        document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+//        document.add(new AreaBreak());
+        document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
     }
 
     // 读取
     private void readExcelAndCreatePages(String excelFilePath) {
         try {
-            FileInputStream fis = new FileInputStream(new File(excelFilePath));
-            Workbook workbook = WorkbookFactory.create(fis);
+            InputStream is = new FileInputStream(excelFilePath);
+//            FileMagic fm = FileMagic.valueOf(is);
+//            System.out.println(fm);
+            org.apache.poi.ss.usermodel.Workbook workbook = org.apache.poi.ss.usermodel.WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(0);
             int nRows = sheet.getPhysicalNumberOfRows();
             int nPDFPages = (int) Math.ceil((double) nRows / 25);
@@ -130,7 +168,7 @@ class PinganPDF {
 
             // 关闭资源
             workbook.close();
-            fis.close();
+            is.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -169,10 +207,25 @@ class PinganPDF {
         }
     }
 
+    // 从json文件中获取配置信息
+    private void getConfig(String configFilePath) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            File configFile = new File(configFilePath);
+            PinganPDF pinganPDF = mapper.readValue(configFile, PinganPDF.class);
+            date = pinganPDF.getConfigDate();
+            balanceBroughtDown = pinganPDF.getConfigBalanceBroughtDown();
+            printedTime = pinganPDF.getConfigPrintDate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // 固定格式文件
     private void createFixedContent() {
 //        System.out.println("Creating Fixed Content");
-
+        getConfig(pinganConfigJsonFilePath);
         // image
         try {
             ImageData logoImageData = ImageDataFactory.create(pinganLogo);
@@ -306,9 +359,10 @@ class PinganPDF {
     public void createNewPinganPDF(String pinganModifiedPdfFilePath) {
         try {
 //            writerProperties = new WriterProperties().setPdfVersion(pdfVersion15).useSmartMode().setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
-            WriterProperties writerProperties = new WriterProperties().setPdfVersion(pdfVersion15).useSmartMode().setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
+            writerProperties = new WriterProperties().setPdfVersion(pdfVersion15).useSmartMode().setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
 
-            PdfWriter pdfWriter = new PdfWriter(pinganModifiedPdfFilePath, writerProperties);
+            pdfWriter = new PdfWriter(pinganModifiedPdfFilePath, writerProperties);
+
             pdfDoc = new PdfDocument(pdfWriter);
 //            System.out.println(pdfDoc.getPdfVersion());
             document = new Document(pdfDoc, PageSize.A4.rotate());
@@ -317,6 +371,8 @@ class PinganPDF {
 
             // 将多出来的一页进行删除
             pdfDoc.removePage(pdfDoc.getNumberOfPages());
+            pdfDoc.close();
+            pdfWriter.close();
             document.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -325,13 +381,13 @@ class PinganPDF {
 
     public void pdfToExcel(String pdfFilePath, String excelFilePath) {
         try {
-            System.out.println("Reading Pingan Pdf is processing");
+            System.out.println("【从平安PDF中读取相关数据，进行中...】");
 
             PdfReader reader = new PdfReader(pdfFilePath);
             PdfDocument pdfDoc = new PdfDocument(reader);
             int nPages = pdfDoc.getNumberOfPages();
 
-            System.out.println("Pages is " + nPages);
+            System.out.println("【读取到" + nPages + "页】");
 
             SimpleTextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
 
@@ -378,7 +434,7 @@ class PinganPDF {
             FileOutputStream fileOut = new FileOutputStream(excelFilePath);
             workbook.write(fileOut);
 
-            System.out.println("Excel is done");
+//            System.out.println("Excel is done");
 
         } catch (Exception e) {
             e.printStackTrace();

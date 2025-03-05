@@ -113,6 +113,19 @@
             <version>2.0.16</version> <!-- 使用你需要的版本 -->
         </dependency>
 
+        <!--        若项目同时使用SLF4J和Log4j，需引入桥接器依赖（如slf4j-log4j12）和Log4j实现库-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.slf4j</groupId>-->
+        <!--            <artifactId>slf4j-core</artifactId>-->
+        <!--            <version>2.0.16</version> &lt;!&ndash; 使用你需要的版本 &ndash;&gt;-->
+        <!--        </dependency>-->
+
         <!-- Log4j2 作为 SLF4J 实现 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -127,18 +140,19 @@
             <version>2.24.3</version> <!-- 使用你需要的版本 -->
         </dependency>
 
-        <!-- Apache POI -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.4.0</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.4.0</version>
         </dependency>
+
+        <!--        &lt;!&ndash; Apache POI &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.poi</groupId>-->
+        <!--            <artifactId>poi</artifactId>-->
+        <!--            <version>5.4.0</version>-->
+        <!--        </dependency>-->
+
 
         <!-- 读取2bit图像 -->
         <dependency>
@@ -146,36 +160,39 @@
             <artifactId>commons-imaging</artifactId>
             <version>1.0.0-alpha5</version>
         </dependency>
+
+        <!-- json -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.tommygina.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.tommygina.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
-
-
     </build>
-
 </project>
